@@ -11,6 +11,7 @@ function App() {
   const [allUrls, setAllUrls] = useState([]);
   const [showStats, setShowStats] = useState(null);
   const [statsUrl, setStatsUrl] = useState('');
+  const [levelOneResponse, setLevelOneResponse] = useState('');
 
   const API_BASE_URL = 'http://localhost:5000/api'; //  Make sure your server is running at the same origin, or update with full URL
 
@@ -36,8 +37,9 @@ function App() {
         throw new Error(errorData.message || 'Failed to shorten URL');
       }
 
-      const data = await response.json();
-      setShortUrl(data.shortUrl);
+      // const data = await response.json();
+      // setShortUrl(data.shortUrl);
+      setLevelOneResponse(await response.text())
     } catch (err) {
       setError(err.message || 'An error occurred while shortening the URL.');
     } finally {
@@ -53,10 +55,24 @@ function App() {
       setError('');
       setLoading(true);
       try {
-          const response = await fetch(`${API_BASE_URL}/decode?shortUrl=${shortUrlToDecode}`);
+          // const response = await fetch(`${API_BASE_URL}/decode?shortUrl=${shortUrlToDecode}`);
+          // if (!response.ok) {
+          //     const errorData = await response.json();
+          //     throw new Error(errorData.message || 'Failed to decode');
+          // }
+          // const data = await response.json();
+          // setoriginalUrl(data.originalUrl);
+          const response = await fetch(`${API_BASE_URL}/decode`, {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ shortUrl: shortUrlToDecode }),
+          });
+
           if (!response.ok) {
               const errorData = await response.json();
-              throw new Error(errorData.message || 'Failed to decode');
+              throw new Error(errorData.message || 'Failed to shorten URL');
           }
           const data = await response.json();
           setoriginalUrl(data.originalUrl);
@@ -145,7 +161,8 @@ function App() {
               )}
             </Button>
           </div>
-          {shortUrl && (
+            { levelOneResponse}
+          {levelOneResponse && (
             <div className="bg-gray-800 rounded-md p-4 border border-gray-700">
               <p className="text-gray-300">Shortened URL:</p>
               <a
@@ -154,7 +171,7 @@ function App() {
                 rel="noopener noreferrer"
                 className="text-blue-400 hover:text-blue-300 font-medium break-all"
               >
-                {`${window.location.origin}/${shortUrl}`}
+                {`http://localhost:5000/${shortUrl}`}
               </a>
             </div>
           )}
@@ -166,13 +183,13 @@ function App() {
                 <Input
                 type="text"
                 placeholder="Enter short URL to decode (e.g., GeAi9K)"
-                value={originalUrl}
-                onChange={(e) => setoriginalUrl(e.target.value)}
+                value={shortUrl}
+                onChange={(e) => setShortUrl(e.target.value)}
                 className="bg-gray-800 border-gray-700 text-white placeholder:text-gray-400"
                 disabled={loading}
                 />
                 <Button
-                onClick={() => handleDecode(originalUrl)}
+                onClick={() => handleDecode(shortUrl)}
                 className="bg-green-500 hover:bg-green-600 text-white font-semibold px-6 py-3 rounded-md transition-colors duration-200"
                 disabled={loading}
                 >
