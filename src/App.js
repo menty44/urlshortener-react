@@ -4,7 +4,7 @@ import {useCallback, useState} from "react";
 import {Alert, Button, Input, List, Spin} from "antd";
 
 function App() {
-  const [longUrl, setLongUrl] = useState('');
+  const [originalUrl, setoriginalUrl] = useState('');
   const [shortUrl, setShortUrl] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -12,10 +12,10 @@ function App() {
   const [showStats, setShowStats] = useState(null);
   const [statsUrl, setStatsUrl] = useState('');
 
-  const API_BASE_URL = '/api'; //  Make sure your server is running at the same origin, or update with full URL
+  const API_BASE_URL = 'http://localhost:5000/api'; //  Make sure your server is running at the same origin, or update with full URL
 
   const handleEncode = useCallback(async () => {
-    if (!longUrl.trim()) {
+    if (!originalUrl.trim()) {
       setError('Please enter a URL to shorten.');
       return;
     }
@@ -28,7 +28,7 @@ function App() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ longUrl }),
+        body: JSON.stringify({ originalUrl }),
       });
 
       if (!response.ok) {
@@ -43,7 +43,7 @@ function App() {
     } finally {
       setLoading(false);
     }
-  }, [longUrl, API_BASE_URL]);
+  }, [originalUrl, API_BASE_URL]);
 
   const handleDecode = useCallback(async (shortUrlToDecode) => {
       if (!shortUrlToDecode.trim()) {
@@ -59,7 +59,7 @@ function App() {
               throw new Error(errorData.message || 'Failed to decode');
           }
           const data = await response.json();
-          setLongUrl(data.longUrl);
+          setoriginalUrl(data.originalUrl);
       } catch (err) {
           setError(err.message || 'An error occurred while decoding the URL.');
       } finally {
@@ -113,7 +113,7 @@ function App() {
   }, [API_BASE_URL, statsUrl]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 text-white p-4 sm:p-8">
+    <div className="pl-12 pr-12 min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 text-white p-4 sm:p-8">
       <div className="max-w-4xl mx-auto space-y-6">
         <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-center bg-gradient-to-r from-blue-400 to-purple-500 text-transparent bg-clip-text">
           ShortLink URL Shortener
@@ -125,8 +125,8 @@ function App() {
             <Input
               type="url"
               placeholder="Enter URL to shorten (e.g., https://www.example.com)"
-              value={longUrl}
-              onChange={(e) => setLongUrl(e.target.value)}
+              value={originalUrl}
+              onChange={(e) => setoriginalUrl(e.target.value)}
               className="bg-gray-800 border-gray-700 text-white placeholder:text-gray-400"
               disabled={loading}
             />
@@ -136,10 +136,10 @@ function App() {
               disabled={loading}
             >
               {loading ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Shortening...
-                </>
+                  <>
+                      <Spin tip="Loading..." className="mr-2 h-4 w-4 animate-spin" />
+                      Shortening...
+                  </>
               ) : (
                 'Shorten'
               )}
@@ -166,20 +166,21 @@ function App() {
                 <Input
                 type="text"
                 placeholder="Enter short URL to decode (e.g., GeAi9K)"
-                value={longUrl}
-                onChange={(e) => setLongUrl(e.target.value)}
+                value={originalUrl}
+                onChange={(e) => setoriginalUrl(e.target.value)}
                 className="bg-gray-800 border-gray-700 text-white placeholder:text-gray-400"
                 disabled={loading}
                 />
                 <Button
-                onClick={() => handleDecode(longUrl)}
+                onClick={() => handleDecode(originalUrl)}
                 className="bg-green-500 hover:bg-green-600 text-white font-semibold px-6 py-3 rounded-md transition-colors duration-200"
                 disabled={loading}
                 >
                 {loading ? (
+
                     <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Decoding...
+                        <Spin tip="Loading..." className="mr-2 h-4 w-4 animate-spin" />
+                        Decoding...
                     </>
                 ) : (
                     'Decode'
@@ -230,12 +231,12 @@ function App() {
                   <div>
                     <p className="text-gray-300">Long URL:</p>
                     <a
-                      href={item.longUrl}
+                      href={item.originalUrl}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-green-400 hover:text-green-300 font-medium break-all"
                     >
-                      {item.longUrl}
+                      {item.originalUrl}
                     </a>
                   </div>
                 </div>
@@ -284,12 +285,12 @@ function App() {
             )}
             </div>
 
-        {error && (
-          <Alert variant="destructive" className="bg-red-500/10 border-red-500 text-red-400"
-                 message="Error"
-                 description="An error occurred: ."
-                 type="error"/>
-        )}
+        {/*{error && (*/}
+        {/*  <Alert variant="destructive" className="bg-red-500/10 border-red-500 text-red-400"*/}
+        {/*         message="Error"*/}
+        {/*         description="An error occurred: ."*/}
+        {/*         type="error"/>*/}
+        {/*)}*/}
       </div>
     </div>
   );
