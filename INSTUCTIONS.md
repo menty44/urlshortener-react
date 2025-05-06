@@ -10,6 +10,9 @@ $ npm install
 # development
 $ npm run start
 ```
+
+Access the code on http://localhost:3000/
+
 ## Fill the form as shown in the image
 
 ![alt text](plat.png)
