@@ -11,7 +11,8 @@ function App() {
   const [allUrls, setAllUrls] = useState([]);
   const [showStats, setShowStats] = useState(null);
   const [statsUrl, setStatsUrl] = useState('');
-  const [levelOneResponse, setLevelOneResponse] = useState('');
+    const [levelOneResponse, setLevelOneResponse] = useState('');
+    const [levelTwoResponse, setLevelTwoResponse] = useState('');
 
   const API_BASE_URL = 'http://localhost:5000/api'; //  Make sure your server is running at the same origin, or update with full URL
 
@@ -36,9 +37,6 @@ function App() {
         const errorData = await response.json();
         throw new Error(errorData.message || 'Failed to shorten URL');
       }
-
-      // const data = await response.json();
-      // setShortUrl(data.shortUrl);
       setLevelOneResponse(await response.text())
     } catch (err) {
       setError(err.message || 'An error occurred while shortening the URL.');
@@ -55,13 +53,7 @@ function App() {
       setError('');
       setLoading(true);
       try {
-          // const response = await fetch(`${API_BASE_URL}/decode?shortUrl=${shortUrlToDecode}`);
-          // if (!response.ok) {
-          //     const errorData = await response.json();
-          //     throw new Error(errorData.message || 'Failed to decode');
-          // }
-          // const data = await response.json();
-          // setoriginalUrl(data.originalUrl);
+
           const response = await fetch(`${API_BASE_URL}/decode`, {
               method: 'POST',
               headers: {
@@ -75,7 +67,8 @@ function App() {
               throw new Error(errorData.message || 'Failed to shorten URL');
           }
           const data = await response.json();
-          setoriginalUrl(data.originalUrl);
+          setLevelTwoResponse(data.longUrl);
+          setoriginalUrl(data.longUrl);
       } catch (err) {
           setError(err.message || 'An error occurred while decoding the URL.');
       } finally {
@@ -166,12 +159,12 @@ function App() {
             <div className="bg-gray-800 rounded-md p-4 border border-gray-700">
               <p className="text-gray-300">Shortened URL:</p>
               <a
-                href={`/${shortUrl}`}
+                href={`/`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-blue-400 hover:text-blue-300 font-medium break-all"
               >
-                {`http://localhost:5000/${shortUrl}`}
+                {`http://localhost:5000/${levelOneResponse}`}
               </a>
             </div>
           )}
@@ -204,6 +197,20 @@ function App() {
                 )}
                 </Button>
             </div>
+
+            {levelTwoResponse && (
+                <div className="bg-gray-800 rounded-md p-4 border border-gray-700">
+                    <p className="text-gray-300">Original URL:</p>
+                    <a
+                        href={`/`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-400 hover:text-blue-300 font-medium break-all"
+                    >
+                        {originalUrl}
+                    </a>
+                </div>
+            )}
         </div>
 
         <div className="bg-gray-900/80 backdrop-blur-md rounded-xl shadow-lg p-4 sm:p-6 space-y-4">
@@ -222,7 +229,7 @@ function App() {
               </>
             ) : (
               <>
-                <List className="mr-2 h-4 w-4" />
+                <List className="mr-2 h-1 w-8" />
                 List URLs
               </>
             )}
