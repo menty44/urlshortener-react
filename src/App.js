@@ -269,7 +269,7 @@ function App() {
                     </>
                 ) : (
                     <>
-                    <BarChart className="mr-2 h-4 w-4" />
+                    <span className="mr-2 h-4 w-4" />
                     Show Stats
                     </>
                 )}
@@ -286,8 +286,8 @@ function App() {
 
         {error && (
           <Alert variant="destructive" className="bg-red-500/10 border-red-500 text-red-400"
-                 message="Alert message title"
-                 description="Further details about the context of this alert."
+                 message="Error"
+                 description="An error occurred: ."
                  type="error"/>
         )}
       </div>
